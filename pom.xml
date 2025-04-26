@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>Supermarket-Sales-Management-Client</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>server</groupId>   <!-- Đặt gì cũng được -->
+            <artifactId>th</artifactId>        <!-- Tên bạn tự đặt -->
+            <version>1.0</version>             <!-- Version bạn tự đặt -->
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/Supermarket-Sales-Management-Application-1.0-SNAPSHOT.jar</systemPath>
+        </dependency>
+
+    </dependencies>
+
+</project>
