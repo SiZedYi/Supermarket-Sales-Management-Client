@@ -9,17 +9,17 @@ import java.awt.*;
 import java.rmi.RemoteException;
 import java.util.List;
 
-public class InvoiceManagementUI extends JFrame {
+public class InvoiceManagementUI extends JPanel {
     private SupermarketService service;
     private JTable table;
     private DefaultTableModel tableModel;
 
     public InvoiceManagementUI(SupermarketService service) {
         this.service = service;
-        setTitle("Manage Invoices");
+//        setTitle("Manage Invoices");
         setSize(800, 500);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//        setLocationRelativeTo(null);
+//        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         tableModel = new DefaultTableModel(new String[]{"ID", "Customer", "Employee", "Order Date"}, 0);
         table = new JTable(tableModel);

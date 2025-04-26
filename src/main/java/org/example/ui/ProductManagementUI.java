@@ -97,6 +97,7 @@ public class ProductManagementUI extends JFrame {
             JOptionPane.showMessageDialog(this, "Thêm sản phẩm thành công!");
             if (productListUI != null) {
                 productListUI.loadProducts(); // Refresh product list UI
+                dispose();
             }
         } catch (Exception e) {
             e.printStackTrace();

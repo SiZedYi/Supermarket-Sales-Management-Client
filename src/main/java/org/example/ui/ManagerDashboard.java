@@ -25,7 +25,7 @@ public class ManagerDashboard extends JFrame {
         JButton btnManageCategories = new JButton("Quản lý loại hàng");
         JButton btnManageProducts = new JButton("Quản lý sản phẩm");
         JButton btnManageInvoices = new JButton("Quản lý hóa đơn");
-        JButton btnManageEmployees = new JButton("Quản lý nhân viên");
+        JButton btnManageEmployees = new JButton("Quản lý người dùng");
 
         btnViewInfo.addActionListener(e -> viewInfo());
         btnChangePassword.addActionListener(e -> changePassword());

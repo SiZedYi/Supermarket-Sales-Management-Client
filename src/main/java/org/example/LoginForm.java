@@ -2,8 +2,7 @@ package org.example;
 
 import org.example.model.*;
 import org.example.rmi.SupermarketService;
-import org.example.ui.ManagerDashboard;
-import org.example.ui.SalesAgentDashboard;
+import org.example.ui.MainUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -45,15 +44,10 @@ public class LoginForm extends JFrame {
                 String password = new String(txtPassword.getPassword());
                 Account account = service.login(userId, password);
                 if (account != null) {
-                    User user = service.viewUserInfo(userId);
-                    if (userId.startsWith("SA")) {
-                        new SalesAgentDashboard(service, user).setVisible(true);
-                    } else {
-                        new ManagerDashboard(service, userId).setVisible(true);
-                    }
+                    new MainUI(service, userId).setVisible(true);
                     dispose();
                 } else {
-                    JOptionPane.showMessageDialog(this, "Đăng nhập thất bại!");
+                    JOptionPane.showMessageDialog(this, "Login failed!");
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

@@ -39,8 +39,8 @@ public class PayInvoiceUI extends JFrame {
 
     private void payInvoice() {
         try {
-            Long customerId = Long.parseLong(txtCustomerId.getText());
-            Long employeeId = Long.parseLong(txtEmployeeId.getText());
+            String customerId = txtCustomerId.getText();
+            String employeeId = txtEmployeeId.getText();
             service.payInvoice(customerId, employeeId, new Date());
             JOptionPane.showMessageDialog(this, "Invoice paid successfully!");
             dispose();

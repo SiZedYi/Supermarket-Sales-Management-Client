@@ -8,7 +8,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.rmi.RemoteException;
 import java.util.List;
-public class ProductListUI extends JFrame {
+public class ProductListUI extends JPanel {
     private SupermarketService service;
     private JTable table;
     private DefaultTableModel tableModel;
@@ -17,10 +17,10 @@ public class ProductListUI extends JFrame {
 
     public ProductListUI(SupermarketService service) {
         this.service = service;
-        setTitle("Product List");
+//        setTitle("Product List");
         setSize(800, 500);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//        setLocationRelativeTo(null);
+//        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         tableModel = new DefaultTableModel(new String[]{"ID", "Name", "Price", "Category"}, 0);
         table = new JTable(tableModel);
@@ -102,9 +102,9 @@ public class ProductListUI extends JFrame {
     private void deleteSelectedProduct() {
         int selectedRow = table.getSelectedRow();
         if (selectedRow >= 0) {
-            Long productId = (Long) tableModel.getValueAt(selectedRow, 0); // ID ở cột 0
+            String productId = (String) tableModel.getValueAt(selectedRow, 0); // ID ở cột 0
             try {
-                service.deleteProduct(productId);
+                service.deleteProduct(Long.parseLong(productId));
                 JOptionPane.showMessageDialog(this, "Product deleted successfully.");
                 loadProducts(); // Refresh table
             } catch (RemoteException e) {

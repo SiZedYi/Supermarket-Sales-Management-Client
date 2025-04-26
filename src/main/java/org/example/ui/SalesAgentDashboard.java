@@ -33,7 +33,7 @@ public class SalesAgentDashboard extends JFrame {
         btnPayInvoice.addActionListener(e -> {
             try {
                 String customerId = JOptionPane.showInputDialog(this, "Customer ID:");
-                service.payInvoice(Long.valueOf(customerId), Long.valueOf(user.getUserId()), new Date());
+                service.payInvoice(customerId, user.getUserId(), new Date());
                 JOptionPane.showMessageDialog(this, "Thanh toán thành công!");
             } catch (Exception ex) {
                 ex.printStackTrace();
