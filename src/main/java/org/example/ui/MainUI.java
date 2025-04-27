@@ -24,11 +24,13 @@ public class MainUI extends JFrame {
         JButton btnViewInfo = new JButton("View Info");
         JButton btnManageProducts = new JButton("Manage Products");
         JButton btnManageInvoices = new JButton("Manage Invoices");
+        JButton btnManageAddInvoices = new JButton("Add to Invoices");
         JButton btnManageEmployees = new JButton("Manage Employees");
 
         sidebar.add(btnViewInfo);
         sidebar.add(btnManageProducts);
         sidebar.add(btnManageInvoices);
+        sidebar.add(btnManageAddInvoices);
         sidebar.add(btnManageEmployees);
 
         add(sidebar, BorderLayout.WEST);
@@ -40,6 +42,7 @@ public class MainUI extends JFrame {
         // Add different panels to the CardLayout
         contentPanel.add(new JPanel(), "EMPTY"); // Default empty panel
         contentPanel.add(new ProductListUI(service), "PRODUCTS");
+        contentPanel.add(new InvoiceManagementUI(service), "INVOICES-LIST");
         contentPanel.add(new AddInvoiceUI(service, userId), "INVOICES");
         contentPanel.add(new EmployeeManagementUI(service), "EMPLOYEES");
 
@@ -48,7 +51,8 @@ public class MainUI extends JFrame {
         // Button actions to switch content
         btnViewInfo.addActionListener(e -> JOptionPane.showMessageDialog(this, "User Info: " + userId));
         btnManageProducts.addActionListener(e -> cardLayout.show(contentPanel, "PRODUCTS"));
-        btnManageInvoices.addActionListener(e -> cardLayout.show(contentPanel, "INVOICES"));
+        btnManageInvoices.addActionListener(e -> cardLayout.show(contentPanel, "INVOICES-LIST"));
+        btnManageAddInvoices.addActionListener(e -> cardLayout.show(contentPanel, "INVOICES"));
         btnManageEmployees.addActionListener(e -> cardLayout.show(contentPanel, "EMPLOYEES"));
     }
 }

@@ -29,7 +29,7 @@ public class ProductListUI extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();
-        JButton btnManageProducts = new JButton("Manage Products");
+        JButton btnManageProducts = new JButton("Add Products");
         JButton btnDeleteProduct = new JButton("Delete Product");
 
         btnManageProducts.addActionListener(e -> {

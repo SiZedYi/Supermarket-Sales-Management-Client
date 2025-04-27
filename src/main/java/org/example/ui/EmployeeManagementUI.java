@@ -23,12 +23,12 @@ public class EmployeeManagementUI extends JPanel {
 
         JPanel panel = new JPanel(new BorderLayout());
 
-        tableModel = new DefaultTableModel(new Object[]{"User ID", "Full Name", "Phone", "Email"}, 0);
+        tableModel = new DefaultTableModel(new Object[]{"UserId", "Full Name", "Phone", "Email", "Role"}, 0);
         table = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(table);
 
-        JButton addButton = new JButton("Add Employee");
-        JButton deleteButton = new JButton("Delete Employee");
+        JButton addButton = new JButton("Add User");
+        JButton deleteButton = new JButton("Delete User");
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(addButton);
         buttonPanel.add(deleteButton);
@@ -46,16 +46,23 @@ public class EmployeeManagementUI extends JPanel {
 
     public void loadEmployees() {
         try {
-            List<Employee> employees = service.listEmployees();
+            List<User> users = service.listEmployees();
             tableModel.setRowCount(0);
-            for (Employee emp : employees) {
+            for (User emp : users) {
                 tableModel.addRow(new Object[]{
                         emp.getUserId(),
-                        emp.getUser().getHoTen(),
-                        emp.getUser().getCccd(),
-                        emp.getUser().getEmail()
+                        emp.getHoTen(),
+                        emp.getCccd(),
+                        emp.getEmail(),
+                        emp.getUserId().startsWith("SA") ? "Sales Agent" : "User",
                 });
             }
+
+            // Ẩn cột userId trong JTable (cột đầu tiên)
+            table.getColumnModel().getColumn(0).setMinWidth(0);
+            table.getColumnModel().getColumn(0).setMaxWidth(0);
+            table.getColumnModel().getColumn(0).setWidth(0);
+            table.getColumnModel().getColumn(0).setResizable(false);
         } catch (Exception e) {
             e.printStackTrace();
         }

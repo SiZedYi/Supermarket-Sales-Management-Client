@@ -139,36 +139,37 @@ public class AddInvoiceUI extends JPanel {
     private void saveInvoice() {
         Customer customer = (Customer) customerComboBox.getSelectedItem();
         if (customer == null || productTableModel.getRowCount() == 0) {
-            JOptionPane.showMessageDialog(this, "Please select customer and add at least one product.", "Warning", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select a customer and add at least one product.", "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         try {
-            // Create new invoice
+            // 1. Tạo Invoice
             Invoice invoice = new Invoice();
-            invoice.setCustomer(customer);  // set the customer from the combo box
+            invoice.setCustomer(customer);
+            invoice.setUser(new User(userId));
             invoice.setOrderDate(new Date());
 
-            // Set User (Employee) from userId (assuming you have a method to get User by userId)
-            User currentUser = service.viewUserInfo(userId); // Fetch the user based on userId
-            if (currentUser != null) {
-                invoice.setUser(currentUser);  // set the user (Employee) who is creating the invoice
-            }
-
+            // 2. Tạo danh sách InvoiceDetail
             List<InvoiceDetail> details = new ArrayList<>();
+
             for (int i = 0; i < productTableModel.getRowCount(); i++) {
+                Long productId = (Long) productTableModel.getValueAt(i, 0);
+                Double unitPrice = (Double) productTableModel.getValueAt(i, 2);
+                Integer quantity = (Integer) productTableModel.getValueAt(i, 3);
+
+                Product product = service.getProductById(productId);
                 InvoiceDetail detail = new InvoiceDetail();
-                Product product = (Product) productTableModel.getValueAt(i, 0);
                 detail.setProduct(product);
-                detail.setUnitPrice((Double) productTableModel.getValueAt(i, 2));
-                detail.setQuantity((Integer) productTableModel.getValueAt(i, 3));
+                detail.setQuantity(quantity);
+                detail.setUnitPrice(unitPrice);
+
                 details.add(detail);
             }
 
-//            invoice.setInvoiceDetails(details);
-
-            // Create invoice through service
+            // 3. Gọi service để lưu
             boolean success = service.createInvoice(invoice, details);
+
             if (success) {
                 JOptionPane.showMessageDialog(this, "Invoice created successfully.");
             } else {
@@ -176,8 +177,10 @@ public class AddInvoiceUI extends JPanel {
             }
         } catch (RemoteException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error saving invoice.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error creating invoice: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
+
 
 }
