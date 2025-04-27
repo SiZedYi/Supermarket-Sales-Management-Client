@@ -31,7 +31,7 @@ public class ManagerDashboard extends JFrame {
         btnChangePassword.addActionListener(e -> changePassword());
         btnManageCategories.addActionListener(e -> manageCategories());
         btnManageProducts.addActionListener(e -> new ProductListUI(service).setVisible(true));
-        btnManageInvoices.addActionListener(e -> new PayInvoiceUI(service).setVisible(true));
+        btnManageInvoices.addActionListener(e -> new AddInvoiceUI(service, userId).setVisible(true));
         btnManageEmployees.addActionListener(e -> new EmployeeManagementUI(service).setVisible(true));
 
         panel.add(btnViewInfo);

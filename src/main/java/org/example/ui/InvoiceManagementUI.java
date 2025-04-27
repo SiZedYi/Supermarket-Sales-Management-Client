@@ -39,12 +39,12 @@ public class InvoiceManagementUI extends JPanel {
     private void loadInvoices() {
         try {
             tableModel.setRowCount(0);
-            List<Invoice> invoices = service.listInvoices(); // Bạn cần thêm hàm listInvoices() ở service nhé.
+            List<Invoice> invoices = service.getAllInvoices();
             for (Invoice invoice : invoices) {
                 tableModel.addRow(new Object[]{
                         invoice.getInvoiceDetails().get(1),
                         invoice.getCustomer().getContactName(),
-                        invoice.getEmployee().getUser().getHoTen(),
+                        invoice.getUser().getHoTen(),
                         invoice.getOrderDate()
                 });
             }

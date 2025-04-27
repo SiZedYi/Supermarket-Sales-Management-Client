@@ -40,7 +40,7 @@ public class MainUI extends JFrame {
         // Add different panels to the CardLayout
         contentPanel.add(new JPanel(), "EMPTY"); // Default empty panel
         contentPanel.add(new ProductListUI(service), "PRODUCTS");
-        contentPanel.add(new InvoiceManagementUI(service), "INVOICES");
+        contentPanel.add(new AddInvoiceUI(service, userId), "INVOICES");
         contentPanel.add(new EmployeeManagementUI(service), "EMPLOYEES");
 
         add(contentPanel, BorderLayout.CENTER);
