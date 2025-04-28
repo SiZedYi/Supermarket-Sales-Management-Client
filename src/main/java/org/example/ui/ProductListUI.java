@@ -14,22 +14,41 @@ public class ProductListUI extends JPanel {
     private DefaultTableModel tableModel;
     private JComboBox<Category> cbFilterCategory;
 
-
     public ProductListUI(SupermarketService service) {
         this.service = service;
-//        setTitle("Product List");
         setSize(800, 500);
-//        setLocationRelativeTo(null);
-//        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLayout(new BorderLayout(5, 5));
 
+        // Table model và bảng sản phẩm
         tableModel = new DefaultTableModel(new String[]{"ID", "Name", "Price", "Category"}, 0);
         table = new JTable(tableModel);
-
         JScrollPane scrollPane = new JScrollPane(table);
         add(scrollPane, BorderLayout.CENTER);
 
+        // Panel chứa bộ lọc và nút tìm kiếm
+        JPanel filterPanel = new JPanel();
+        filterPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
+
+        // Bộ lọc theo danh mục
+        filterPanel.add(new JLabel("Filter by Category:"));
+        cbFilterCategory = new JComboBox<>();
+        cbFilterCategory.addItem(new Category()); // "Tất cả" danh mục
+        loadCategoriesToFilter();
+        cbFilterCategory.addActionListener(e -> filterProducts());
+        filterPanel.add(cbFilterCategory);
+
+        // Nút tìm kiếm (Search)
+        JButton btnSearch = new JButton("Search");
+        btnSearch.addActionListener(e -> filterProducts()); // Tìm kiếm khi nhấn
+        filterPanel.add(btnSearch);
+
+        add(filterPanel, BorderLayout.NORTH);
+
+        // Panel chứa các nút "Add Product" và "Delete Product"
         JPanel buttonPanel = new JPanel();
-        JButton btnManageProducts = new JButton("Add Products");
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10)); // Căn giữa các nút
+
+        JButton btnManageProducts = new JButton("Add Product");
         JButton btnDeleteProduct = new JButton("Delete Product");
 
         btnManageProducts.addActionListener(e -> {
@@ -43,20 +62,10 @@ public class ProductListUI extends JPanel {
 
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // Panel chứa bộ lọc
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        topPanel.add(new JLabel("Filter by Category:"));
-        cbFilterCategory = new JComboBox<>();
-        cbFilterCategory.addItem(new Category()); // "Tất cả" danh mục
-        loadCategoriesToFilter();
-        cbFilterCategory.addActionListener(e -> filterProducts());
-        topPanel.add(cbFilterCategory);
-
-        add(topPanel, BorderLayout.NORTH);
-
-
+        // Tải sản phẩm từ dịch vụ
         loadProducts();
     }
+
 
     public void loadProducts() {
         try {
@@ -102,7 +111,7 @@ public class ProductListUI extends JPanel {
     private void deleteSelectedProduct() {
         int selectedRow = table.getSelectedRow();
         if (selectedRow >= 0) {
-            String productId = (String) tableModel.getValueAt(selectedRow, 0); // ID ở cột 0
+            String productId = tableModel.getValueAt(selectedRow, 0).toString(); // ID ở cột 0
             try {
                 service.deleteProduct(Long.parseLong(productId));
                 JOptionPane.showMessageDialog(this, "Product deleted successfully.");

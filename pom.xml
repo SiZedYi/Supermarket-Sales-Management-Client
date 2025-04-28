@@ -23,6 +23,23 @@
             <systemPath>${project.basedir}/libs/Supermarket-Sales-Management-Application-1.0-SNAPSHOT.jar</systemPath>
         </dependency>
 
+        <!-- iText 7 Core Dependencies -->
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>kernel</artifactId>
+            <version>7.2.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>layout</artifactId>
+            <version>7.2.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>io</artifactId>
+            <version>7.2.5</version>
+        </dependency>
+
     </dependencies>
 
 </project>

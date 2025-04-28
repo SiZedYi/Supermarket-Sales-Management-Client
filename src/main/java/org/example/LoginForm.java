@@ -16,7 +16,7 @@ public class LoginForm extends JFrame {
 
     public LoginForm() {
         try {
-            Registry registry = LocateRegistry.getRegistry("192.168.1.9", 1099);
+            Registry registry = LocateRegistry.getRegistry("localhost", 1099);
             service = (SupermarketService) registry.lookup("SupermarketService");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Không thể kết nối RMI server");

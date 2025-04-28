@@ -28,11 +28,8 @@ public class AddInvoiceUI extends JPanel {
     public AddInvoiceUI(SupermarketService service, String userId) {
         this.service = service;
         this.userId = userId;
-//        setTitle("Create Invoice");
         setSize(900, 600);
-//        setLocationRelativeTo(null);
-//        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLayout(new BorderLayout());
+        setLayout(new BorderLayout(10, 10));
 
         initUI();
         loadCustomers();
@@ -40,16 +37,30 @@ public class AddInvoiceUI extends JPanel {
     }
 
     private void initUI() {
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        topPanel.add(new JLabel("Select Customer:"));
+        // Panel chứa ComboBox và nhãn "Select Customer"
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);  // Padding cho các thành phần
+
+        // JLabel "Select Customer"
+        JLabel customerLabel = new JLabel("Select Customer:");
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        topPanel.add(customerLabel, gbc);
+
+        // ComboBox cho khách hàng
         customerComboBox = new JComboBox<>();
-        topPanel.add(customerComboBox);
+        gbc.gridx = 1;
+        topPanel.add(customerComboBox, gbc);
+
         add(topPanel, BorderLayout.NORTH);
 
+        // Table cho sản phẩm
         productTableModel = new DefaultTableModel(new Object[]{"ProductID", "Name", "UnitPrice", "Quantity"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column == 3; // only quantity editable
+                return column == 3; // Chỉ cho phép chỉnh sửa số lượng
             }
 
             @Override
@@ -66,7 +77,10 @@ public class AddInvoiceUI extends JPanel {
         JScrollPane scrollPane = new JScrollPane(productTable);
         add(scrollPane, BorderLayout.CENTER);
 
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        // Panel dưới cùng chứa các nút
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+
         addButton = new JButton("Add Product");
         removeButton = new JButton("Remove Product");
         saveButton = new JButton("Save Invoice");
@@ -79,6 +93,7 @@ public class AddInvoiceUI extends JPanel {
 
         add(bottomPanel, BorderLayout.SOUTH);
 
+        // Action listeners cho các nút
         addButton.addActionListener(e -> showProductSelectionDialog());
         removeButton.addActionListener(e -> removeSelectedProduct());
         saveButton.addActionListener(e -> saveInvoice());
@@ -105,6 +120,7 @@ public class AddInvoiceUI extends JPanel {
     }
 
     private void showProductSelectionDialog() {
+        loadProducts();
         String[] names = availableProducts.stream().map(Product::getProductName).toArray(String[]::new);
         String sel = (String) JOptionPane.showInputDialog(this, "Select product:", "Product Selection",
                 JOptionPane.PLAIN_MESSAGE, null, names, null);

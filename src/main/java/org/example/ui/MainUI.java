@@ -21,7 +21,7 @@ public class MainUI extends JFrame {
         sidebar.setLayout(new GridLayout(0, 1, 10, 10));
         sidebar.setPreferredSize(new Dimension(200, 0));
 
-        JButton btnViewInfo = new JButton("View Info");
+        JButton btnViewInfo = new JButton("View User Info");
         JButton btnManageProducts = new JButton("Manage Products");
         JButton btnManageInvoices = new JButton("Manage Invoices");
         JButton btnManageAddInvoices = new JButton("Add to Invoices");
@@ -40,7 +40,7 @@ public class MainUI extends JFrame {
         contentPanel = new JPanel(cardLayout);
 
         // Add different panels to the CardLayout
-        contentPanel.add(new JPanel(), "EMPTY"); // Default empty panel
+        contentPanel.add(new AccountInfoUI(service, userId), "USER"); // Default empty panel
         contentPanel.add(new ProductListUI(service), "PRODUCTS");
         contentPanel.add(new InvoiceManagementUI(service), "INVOICES-LIST");
         contentPanel.add(new AddInvoiceUI(service, userId), "INVOICES");
@@ -49,7 +49,7 @@ public class MainUI extends JFrame {
         add(contentPanel, BorderLayout.CENTER);
 
         // Button actions to switch content
-        btnViewInfo.addActionListener(e -> JOptionPane.showMessageDialog(this, "User Info: " + userId));
+        btnViewInfo.addActionListener(e -> cardLayout.show(contentPanel, "USER"));
         btnManageProducts.addActionListener(e -> cardLayout.show(contentPanel, "PRODUCTS"));
         btnManageInvoices.addActionListener(e -> cardLayout.show(contentPanel, "INVOICES-LIST"));
         btnManageAddInvoices.addActionListener(e -> cardLayout.show(contentPanel, "INVOICES"));

@@ -28,7 +28,7 @@ public class AddUserUI extends JFrame {
 
         add(new JLabel("Họ Tên:")); txtHoTen=new JTextField(); add(txtHoTen);
         add(new JLabel("Ngày Sinh (yyyy-MM-dd):")); txtNgaySinh=new JTextField(); add(txtNgaySinh);
-        add(new JLabel("CCCD:")); txtCCCD=new JTextField(); add(txtCCCD);
+        add(new JLabel("Số điện thoại:")); txtCCCD=new JTextField(); add(txtCCCD);
         add(new JLabel("Giới Tính:")); txtGioiTinh=new JTextField(); add(txtGioiTinh);
         add(new JLabel("Email:")); txtEmail=new JTextField(); add(txtEmail);
         add(new JLabel("Password:")); txtPassword=new JTextField(); add(txtPassword);
