@@ -5,17 +5,6 @@ import org.example.model.InvoiceDetail;
 import org.example.model.User;
 import org.example.model.Customer;
 import org.example.rmi.SupermarketService;
-import com.itextpdf.kernel.font.PdfFont;
-import com.itextpdf.kernel.font.PdfFontFactory;
-import com.itextpdf.io.font.constants.StandardFonts;
-import com.itextpdf.io.font.PdfEncodings;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Cell;
-import com.itextpdf.layout.element.Paragraph;
-import com.itextpdf.layout.element.Table;
-import com.itextpdf.layout.properties.TextAlignment;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -24,7 +13,11 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.List;
-
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 public class InvoiceManagementUI extends JPanel {
     private SupermarketService service;
     private JTable invoiceTable;
@@ -143,65 +136,125 @@ public class InvoiceManagementUI extends JPanel {
         }
     }
 
+
     private void generatePdfForSelected() {
         int row = invoiceTable.getSelectedRow();
         if (row < 0) {
-            JOptionPane.showMessageDialog(this, "Select an invoice to export.", "Warning", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select an invoice first.", "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
         Invoice inv = invoiceList.get(row);
-        try {
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setSelectedFile(new File("Invoice_" + inv.getInvoiceId() + ".pdf"));
+        if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+        File file = fileChooser.getSelectedFile();
+
+        try (PDDocument document = new PDDocument()) {
+            PDPage page = new PDPage(PDRectangle.A4);
+            document.addPage(page);
+
+            PDType0Font font = PDType0Font.load(document, new File("fonts/arial-unicode-ms.ttf"));
+
+            PDPageContentStream contentStream = new PDPageContentStream(document, page);
+
+            float margin = 50;
+            float yStart = page.getMediaBox().getHeight() - margin;
+            float tableTopY = yStart - 100; // cách header 100px
+            float tableWidth = page.getMediaBox().getWidth() - 2 * margin;
+            float rowHeight = 20;
+            float cellMargin = 5;
+
+            contentStream.setFont(font, 14);
+            contentStream.beginText();
+            contentStream.newLineAtOffset(margin, yStart);
+
+            contentStream.showText("Invoice ID: " + inv.getInvoiceId());
+            contentStream.newLineAtOffset(0, -20);
+            contentStream.showText("Customer: " + (inv.getCustomer() != null ? inv.getCustomer().getContactName() : ""));
+            contentStream.newLineAtOffset(0, -20);
+            contentStream.showText("Orderer: " + (inv.getUser() != null ? inv.getUser().getHoTen() : ""));
+            contentStream.newLineAtOffset(0, -20);
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            contentStream.showText("Order Date: " + (inv.getOrderDate() != null ? df.format(inv.getOrderDate()) : ""));
+            contentStream.endText();
+
+            // Vẽ header bảng
+            String[] headers = {"Product", "Qty", "Unit Price", "Discount", "Total"};
+            float[] colWidths = {tableWidth * 0.4f, tableWidth * 0.1f, tableWidth * 0.15f, tableWidth * 0.15f, tableWidth * 0.2f};
+
+            // Draw table header background
+            contentStream.setNonStrokingColor(200, 200, 200); // light gray
+            contentStream.addRect(margin, tableTopY - rowHeight, tableWidth, rowHeight);
+            contentStream.fill();
+            contentStream.setNonStrokingColor(0, 0, 0); // reset to black
+
+            float nextX = margin;
+            contentStream.setFont(font, 12);
+            contentStream.beginText();
+            contentStream.newLineAtOffset(margin + cellMargin, tableTopY - 15);
+            for (int i = 0; i < headers.length; i++) {
+                contentStream.showText(headers[i]);
+                contentStream.newLineAtOffset(colWidths[i], 0);
+            }
+            contentStream.endText();
+
+            // Load chi tiết hóa đơn
             List<InvoiceDetail> details = service.getInvoiceDetails(inv.getInvoiceId());
-            File file = new File("Invoice_" + inv.getInvoiceId() + ".pdf");
-            PdfWriter writer = new PdfWriter(file);
-            PdfDocument pdfDoc = new PdfDocument(writer);
-            Document doc = new Document(pdfDoc);
-
-            // Load UTF-8 font
-            PdfFont font = PdfFontFactory.createFont(StandardFonts.HELVETICA, PdfEncodings.IDENTITY_H, PdfFontFactory.EmbeddingStrategy.PREFER_EMBEDDED, true);
-
-            // Title
-            Paragraph title = new Paragraph("Invoice To")
-                    .setFont(font)
-                    .setBold()
-                    .setFontSize(18)
-                    .setTextAlignment(TextAlignment.CENTER);
-            doc.add(title);
-
-            doc.add(new Paragraph("Invoice ID: " + inv.getInvoiceId()).setFont(font).setBold());
-            doc.add(new Paragraph("Customer: " + inv.getCustomer().getContactName()).setFont(font).setBold());
-            doc.add(new Paragraph("Orderer: " + inv.getUser().getHoTen()).setFont(font).setBold());
-            doc.add(new Paragraph("Date: " + new SimpleDateFormat("yyyy-MM-dd").format(inv.getOrderDate())).setFont(font).setBold());
-            doc.add(new Paragraph(" "));
-
-            Table table = new Table(new float[]{4, 2, 2, 2, 2});
-            table.addHeaderCell(new Cell().add(new Paragraph("Product").setFont(font).setBold()));
-            table.addHeaderCell(new Cell().add(new Paragraph("Qty").setFont(font).setBold()));
-            table.addHeaderCell(new Cell().add(new Paragraph("Unit Price").setFont(font).setBold()));
-            table.addHeaderCell(new Cell().add(new Paragraph("Discount").setFont(font).setBold()));
-            table.addHeaderCell(new Cell().add(new Paragraph("Total").setFont(font).setBold()));
-
+            float nextY = tableTopY - rowHeight;
             double grandTotal = 0;
+
             for (InvoiceDetail d : details) {
+                nextY -= rowHeight;
+                if (nextY < margin) {
+                    // Thêm trang mới nếu hết trang
+                    contentStream.close();
+                    page = new PDPage(PDRectangle.A4);
+                    document.addPage(page);
+                    contentStream = new PDPageContentStream(document, page);
+                    nextY = page.getMediaBox().getHeight() - margin;
+                }
+
                 double lineTotal = d.getQuantity() * d.getUnitPrice() - (d.getDiscount() != null ? d.getDiscount() : 0);
                 grandTotal += lineTotal;
-                table.addCell(new Cell().add(new Paragraph(d.getProduct().getProductName()).setFont(font)));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(d.getQuantity())).setFont(font)));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(d.getUnitPrice())).setFont(font)));
-                table.addCell(new Cell().add(new Paragraph(String.valueOf(d.getDiscount() != null ? d.getDiscount() : 0)).setFont(font)));
-                table.addCell(new Cell().add(new Paragraph(String.format("%.2f", lineTotal)).setFont(font)));
+
+                String[] data = {
+                        d.getProduct().getProductName(),
+                        String.valueOf(d.getQuantity()),
+                        String.format("%.2f", d.getUnitPrice()),
+                        String.format("%.2f", d.getDiscount() != null ? d.getDiscount() : 0),
+                        String.format("%.2f", lineTotal)
+                };
+
+                contentStream.beginText();
+                contentStream.setFont(font, 11);
+                contentStream.newLineAtOffset(margin + cellMargin, nextY + 5);
+                nextX = margin + cellMargin;
+                for (int i = 0; i < data.length; i++) {
+                    contentStream.showText(data[i]);
+                    nextX += colWidths[i];
+                    contentStream.newLineAtOffset(colWidths[i], 0);
+                }
+                contentStream.endText();
             }
 
-            doc.add(table);
-            doc.add(new Paragraph(" "));
-            doc.add(new Paragraph("Grand Total: " + String.format("%.2f", grandTotal)).setFont(font).setBold());
-            doc.add(new Paragraph("Billing only available today").setFont(font).setItalic().setFontSize(10).setTextAlignment(TextAlignment.CENTER));
+            // Vẽ Grand Total
+            nextY -= rowHeight + 10;
+            contentStream.beginText();
+            contentStream.setFont(font, 13);
+            contentStream.newLineAtOffset(margin + tableWidth - 150, nextY + 5);
+            contentStream.showText("Grand Total: " + String.format("%.2f", grandTotal));
+            contentStream.endText();
 
-            doc.close();
-            JOptionPane.showMessageDialog(this, "PDF generated: " + file.getAbsolutePath());
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "PDF generation failed.", "Error", JOptionPane.ERROR_MESSAGE);
+            contentStream.close();
+
+            document.save(file);
+            JOptionPane.showMessageDialog(this, "PDF generated successfully!","Success",JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Failed to generate PDF.","Error",JOptionPane.ERROR_MESSAGE);
         }
     }
 }

@@ -28,10 +28,10 @@ public class EmployeeManagementUI extends JPanel {
         JScrollPane scrollPane = new JScrollPane(table);
 
         JButton addButton = new JButton("Add User");
-        JButton deleteButton = new JButton("Delete User");
+//        JButton deleteButton = new JButton("Delete User");
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(addButton);
-        buttonPanel.add(deleteButton);
+//        buttonPanel.add(deleteButton);
 
         panel.add(scrollPane, BorderLayout.CENTER);
         panel.add(buttonPanel, BorderLayout.SOUTH);
@@ -41,7 +41,7 @@ public class EmployeeManagementUI extends JPanel {
         loadEmployees();
 
         addButton.addActionListener(e -> addEmployee());
-        deleteButton.addActionListener(e -> deleteEmployee());
+//        deleteButton.addActionListener(e -> deleteEmployee());
     }
 
     public void loadEmployees() {
