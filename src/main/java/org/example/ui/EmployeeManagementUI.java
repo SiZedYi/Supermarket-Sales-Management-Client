@@ -59,7 +59,6 @@ public class EmployeeManagementUI extends JPanel {
 
         titlePanel.add(titleLabel, BorderLayout.WEST);
 
-
         return titlePanel;
     }
 
@@ -67,12 +66,12 @@ public class EmployeeManagementUI extends JPanel {
         JPanel contentPanel = new JPanel(new BorderLayout(0, 10));
         contentPanel.setBackground(Color.WHITE);
 
-        // Create table with custom model
-        String[] columnNames = {"UserId", "Full Name", "Phone", "Email", "Role", "Actions"};
+        // Create table with custom model - Removed Actions column
+        String[] columnNames = {"UserId", "Full Name", "Phone", "Email", "Role"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column == 5; // Only actions column is editable
+                return false; // No editable columns
             }
         };
 
@@ -99,14 +98,8 @@ public class EmployeeManagementUI extends JPanel {
 
         // Apply renderer to all columns
         for (int i = 0; i < table.getColumnCount(); i++) {
-            if (i != 5) { // Don't apply to actions column
-                table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
-            }
+            table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
-
-        // Set up actions column with buttons
-        table.getColumnModel().getColumn(5).setCellRenderer(new ButtonRenderer());
-        table.addMouseListener(new ButtonClickListener());
 
         // Hide userId column
         table.getColumnModel().getColumn(0).setMinWidth(0);
@@ -120,7 +113,6 @@ public class EmployeeManagementUI extends JPanel {
         table.getColumnModel().getColumn(2).setPreferredWidth(100);
         table.getColumnModel().getColumn(3).setPreferredWidth(150);
         table.getColumnModel().getColumn(4).setPreferredWidth(100);
-        table.getColumnModel().getColumn(5).setPreferredWidth(100);
 
         // Create a scroll pane with custom border
         JScrollPane scrollPane = new JScrollPane(table);
@@ -219,54 +211,6 @@ public class EmployeeManagementUI extends JPanel {
         };
     }
 
-    // Custom renderer for the actions column
-    private class ButtonRenderer extends DefaultTableCellRenderer {
-        private JPanel panel;
-        private JButton deleteButton;
-
-        public ButtonRenderer() {
-            panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
-            panel.setBackground(Color.WHITE);
-
-            deleteButton = new JButton();
-            deleteButton.setIcon(createIcon("\u2716", 14, Color.WHITE)); // X icon
-            deleteButton.setBackground(ACCENT_COLOR);
-            deleteButton.setForeground(Color.WHITE);
-            deleteButton.setBorderPainted(false);
-            deleteButton.setFocusPainted(false);
-            deleteButton.setPreferredSize(new Dimension(30, 26));
-
-            panel.add(deleteButton);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            if (isSelected) {
-                panel.setBackground(table.getSelectionBackground());
-            } else {
-                panel.setBackground(row % 2 == 0 ? Color.WHITE : new Color(250, 250, 250));
-            }
-            return panel;
-        }
-    }
-
-
-    // Mouse listener for button clicks in the table
-    // Mouse listener for button clicks in the table
-    private class ButtonClickListener extends MouseAdapter {
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            int column = table.getColumnModel().getColumnIndexAtX(e.getX());
-            int row = e.getY() / table.getRowHeight();
-
-            if (row < table.getRowCount() && row >= 0 && column == 5) {
-                deleteEmployee(row);
-            }
-        }
-    }
-
-
-
     public void loadEmployees() {
         try {
             List<User> users = service.listEmployees();
@@ -279,8 +223,7 @@ public class EmployeeManagementUI extends JPanel {
                         emp.getHoTen(),
                         emp.getCccd(),
                         emp.getEmail(),
-                        emp.getUserId().startsWith("SA") ? "Sales Agent" : "User",
-                        "actions" // Placeholder for actions column
+                        emp.getUserId().startsWith("SA") ? "Sales Agent" : "User"
                 });
 
                 // Apply alternating row colors
@@ -309,39 +252,6 @@ public class EmployeeManagementUI extends JPanel {
         } catch (Exception e) {
             showErrorMessage("Error opening Add Employee dialog: " + e.getMessage());
             e.printStackTrace();
-        }
-    }
-
-
-
-    private void deleteEmployee(int row) {
-        String userId = (String) tableModel.getValueAt(row, 0);
-        String name = (String) tableModel.getValueAt(row, 1);
-
-        // Create custom confirmation dialog
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
-        panel.setBorder(new EmptyBorder(15, 15, 15, 15));
-
-        JLabel icon = new JLabel(UIManager.getIcon("OptionPane.warningIcon"));
-        JLabel message = new JLabel("<html><b>Confirm Deletion</b><br><br>Are you sure you want to delete employee: <b>" + name + "</b>?<br>This action cannot be undone.</html>");
-        message.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-
-        panel.add(icon, BorderLayout.WEST);
-        panel.add(message, BorderLayout.CENTER);
-
-        int result = JOptionPane.showConfirmDialog(
-                this, panel, "Delete Employee",
-                JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);
-
-        if (result == JOptionPane.YES_OPTION) {
-            try {
-                service.deleteEmployee(userId);
-                showSuccessMessage("Employee deleted successfully!");
-                loadEmployees();
-            } catch (Exception ex) {
-                showErrorMessage("Error deleting employee: " + ex.getMessage());
-                ex.printStackTrace();
-            }
         }
     }
 
